@@ -2,67 +2,46 @@ import threading
 import cv2
 import time
 import pyautogui
-from template_matcher import TemplateMatcher
 from screen_processor import ScreenProcessor
+from game_state import *
 
-#Make state a main class
-#move template matcher to state class?
-#extend state and add run function
-#inheritance
-#game has list of states
-class State:
-    def __init__(self,name,accept=[],reject=[]):
-        self.name = name
-        self.accept = accept
-        self.reject = reject
-    
-
+# Make state a main class
+# move template matcher to state class?
+# extend state and add run function
+# inheritance
+# game has list of states
 
 
 class Game:
-
-    def __init__(self,sp):
+    def __init__(self, sp):
         self.sp = ScreenProcessor()
-        self.tm = TemplateMatcher(self.sp)
         self.state = 0
-        self.states = [State("home",["play.png"],["x.png"]),State("play",["play.png","x.png"])]
-
 
     def play(self):
         record = threading.Thread(target=self.sp.record_screen, args=())
         record.start()
         time.sleep(2)
 
-        #check if in state
-        while not self.tm.match_state(self.states[self.state]):
-            time.sleep(0.3)
+        print("Starting")
 
-        time.sleep(3)
-        
+        self.state = HomeState(self)
 
-        #progress to next state 
-        pyautogui.click(1286,830)
-        print("clicking")
+        # check if in state
+        while not self.state.match():
+            pass
+        self.state.run()
 
-        
-
-        #transition state
-        self.state+=1
-        print("HOME!")
-
-
-
-        
-        
-
-        
-        
+        self.state = ChooseModeState(self)
+        while not self.state.match():
+            pass
+        self.state.run()
 
         self.sp.recording = False
         record.join()
 
-#Identify current screen 
-#do tasks
-#Play Button : (1286,830)
-#Standard Play: (1166,397)
-#First Deck: (369,458)
+
+# Identify current screen
+# do tasks
+# Play Button : (1286,830)
+# Standard Play: (1166,397)
+# First Deck: (369,458)

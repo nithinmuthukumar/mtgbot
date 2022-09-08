@@ -1,4 +1,4 @@
-#get current mouse position
+# get current mouse position
 import mouseinfo
-mouseinfo.MouseInfoWindow()
 
+mouseinfo.MouseInfoWindow()
